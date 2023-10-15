@@ -4,7 +4,10 @@ from movie_recommendation import MovieRecommender
 
 def test_clean_title():
     title = "Toy Story (1995)"
-    clean_title = MovieRecommender.clean_title(title)
+    movie_dataset_path = "data/movies.csv"
+    ratings_dataset_path = "data/ratings.csv"
+    movie_recommender = MovieRecommender(movie_dataset_path, ratings_dataset_path)
+    clean_title = movie_recommender.clean_title(title)
     assert clean_title == "Toy Story 1995"
 
 def test_search():

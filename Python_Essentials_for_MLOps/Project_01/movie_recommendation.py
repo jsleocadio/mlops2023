@@ -106,7 +106,7 @@ class MovieRecommender:
 
         logging.info("Sorted the movies based on the score.")
 
-        return rec_percentages.head(10).merge(self.movies, left_index=True, right_on="movieId")[
+        return rec_percentages.head(5).merge(self.movies, left_index=True, right_on="movieId")[
             ["score", "title", "genres"]]
 
 def main():
