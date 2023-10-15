@@ -1,52 +1,112 @@
+"""
+movie_recommendation.py - recommend movies based on movie titles and genres.
+Created by Vik Paruchuri
+Adapted by Jefferson Leocadio
+"""
+
+import re
+import logging
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import pandas as pd
-import re
+
+logging.basicConfig(filename='movie_recommendation.log',
+                    level=logging.INFO,
+                    format='%(asctime)s %(levelname)s %(message)s',
+                    datefmt='%m/%d/%Y %I:%M:%S %p')
 
 
-movies = pd.read_csv("./data/movies.csv")
-ratings = pd.read_csv("./data/ratings.csv")
-# print(movies.head())
-def clean_title(title):
-    title = re.sub("[^a-zA-Z0-9 ]", "", title)
-    return title
+class MovieRecommender:
+    """Movie recommender based on movie titles and genres."""
+    def __init__(self, movie_dataset_path, ratings_dataset_path) -> None:
+        """Initialize the recommender."""
+        logging.info("Initializing the recommender.")
 
-movies["clean_title"] = movies["title"].apply(clean_title)
-# print(movies.head())
-vectorizer = TfidfVectorizer(ngram_range=(1,2))
-tfidf = vectorizer.fit_transform(movies["clean_title"])
+        self.movies = pd.read_csv(movie_dataset_path)
 
-def search(title):
-    title = clean_title(title)
-    query_vec = vectorizer.transform([title])
-    similarity = cosine_similarity(query_vec, tfidf).flatten()
-    indices = np.argpartition(similarity, -5)[-5:]
-    results = movies.iloc[indices].iloc[::-1]
-    
-    return results
+        logging.info("Loaded the movie dataset.")
 
-movie_input = input("Digite o título do filme: ")
+        self.ratings = pd.read_csv(ratings_dataset_path)
 
-movie_result = search(movie_input)
+        logging.info("Loaded the ratings dataset.")
 
-print(movie_result)
+        self.movies["clean_title"] = self.movies["title"].apply(self.clean_title)
 
-def find_similar_movies(movie_id):
-    similar_users = ratings[(ratings["movieId"] == movie_id) & (ratings["rating"] > 4)]["userId"].unique()
-    similar_user_recs = ratings[(ratings["userId"].isin(similar_users)) & (ratings["rating"] > 4)]["movieId"]
-    similar_user_recs = similar_user_recs.value_counts() / len(similar_users)
+        logging.info("Cleaned the movie titles.")
 
-    similar_user_recs = similar_user_recs[similar_user_recs > .10]
-    all_users = ratings[(ratings["movieId"].isin(similar_user_recs.index)) & (ratings["rating"] > 4)]
-    all_user_recs = all_users["movieId"].value_counts() / len(all_users["userId"].unique())
-    rec_percentages = pd.concat([similar_user_recs, all_user_recs], axis=1)
-    rec_percentages.columns = ["similar", "all"]
-    
-    rec_percentages["score"] = rec_percentages["similar"] / rec_percentages["all"]
-    rec_percentages = rec_percentages.sort_values("score", ascending=False)
-    return rec_percentages.head(10).merge(movies, left_index=True, right_on="movieId")[["score", "title", "genres"]]
+        self.vectorizer = TfidfVectorizer(ngram_range=(1,2))
+        self.tfidf = self.vectorizer.fit_transform(self.movies["clean_title"])
 
+    def clean_title(self, title):
+        """Remove special characters from the title."""
+        title = re.sub("[^a-zA-Z0-9 ]", "", title)
+        return title
 
-movie_id = movie_result.iloc[1]["movieId"]
-print(find_similar_movies(movie_id))
+    def search(self, title):
+        """Search for movies based on the title."""
+        logging.info("Searching for movies based on the title: %s", title)
+
+        title = self.clean_title(title)
+        query_vec = self.vectorizer.transform([title])
+        similarity = cosine_similarity(query_vec, self.tfidf).flatten()
+        indices = np.argpartition(similarity, -5)[-5:]
+
+        logging.info("Found %s movies.", len(indices))
+
+        results = self.movies.iloc[indices].iloc[::-1]
+
+        return results
+
+    def find_similar_movies(self, movie_id):
+        """Find similar movies based on the movie id."""
+        logging.info("Finding similar movies based on the movie id: %s", movie_id)
+        similar_users = self.ratings[(self.ratings["movieId"] == movie_id) &
+                                     (self.ratings["rating"] > 4)]["userId"].unique()
+        similar_user_recs = self.ratings[(self.ratings["userId"].isin(similar_users)) &
+                                         (self.ratings["rating"] > 4)]["movieId"]
+        similar_user_recs = similar_user_recs.value_counts() / len(similar_users)
+
+        similar_user_recs = similar_user_recs[similar_user_recs > .10]
+        all_users = self.ratings[(self.ratings["movieId"].isin(similar_user_recs.index)) &
+                                 (self.ratings["rating"] > 4)]
+        all_user_recs = all_users["movieId"].value_counts() / len(all_users["userId"].unique())
+        rec_percentages = pd.concat([similar_user_recs, all_user_recs], axis=1)
+        rec_percentages.columns = ["similar", "all"]
+
+        logging.info("Found %s similar movies.", len(rec_percentages))
+
+        rec_percentages["score"] = rec_percentages["similar"] / rec_percentages["all"]
+        rec_percentages = rec_percentages.sort_values("score", ascending=False)
+
+        logging.info("Sorted the movies based on the score.")
+
+        return rec_percentages.head(10).merge(self.movies, left_index=True, right_on="movieId")[
+            ["score", "title", "genres"]]
+
+def main():
+    """Main function."""
+    logging.info("Starting the main function.")
+
+    movie_recommender = MovieRecommender("./data/movies.csv", "./data/ratings.csv")
+
+    logging.info("Initialized the movie recommender.")
+
+    movie_input = input("Type the movie title: ")
+
+    logging.info("Searching for movies.")
+
+    movie_result = movie_recommender.search(movie_input)
+
+    logging.info("Found the movies.")
+    logging.info("Finding similar movies.")
+
+    movie_id = movie_result.iloc[0]["movieId"]
+    similar_movies = movie_recommender.find_similar_movies(movie_id)
+
+    logging.info("Found similar movies.")
+
+    print(similar_movies)
+
+if __name__ == "__main__":
+    main()
