@@ -19,8 +19,15 @@ logging.basicConfig(filename='movie_recommendation.log',
 
 class MovieRecommender:
     """Movie recommender based on movie titles and genres."""
-    def __init__(self, movie_dataset_path, ratings_dataset_path) -> None:
-        """Initialize the recommender."""
+    def __init__(self, movie_dataset_path: str, ratings_dataset_path: str) -> None:
+        """
+        Initialize the recommender.
+        
+        Args: movie_dataset_path (str): Path to the movie dataset, 
+        ratings_dataset_path (str): Path to the ratings dataset.
+
+        Returns: None
+        """
         logging.info("Initializing the recommender.")
 
         self.movies = pd.read_csv(movie_dataset_path)
@@ -38,13 +45,25 @@ class MovieRecommender:
         self.vectorizer = TfidfVectorizer(ngram_range=(1,2))
         self.tfidf = self.vectorizer.fit_transform(self.movies["clean_title"])
 
-    def clean_title(self, title):
-        """Remove special characters from the title."""
+    def clean_title(self, title: str) -> str:
+        """
+        Remove special characters from the title.
+        
+        Args: title (str): The title of the movie.
+
+        Returns: str: The title of the movie without special characters.
+        """
         title = re.sub("[^a-zA-Z0-9 ]", "", title)
         return title
 
-    def search(self, title):
-        """Search for movies based on the title."""
+    def search(self, title: str) -> pd.DataFrame():
+        """
+        Search for movies based on the title.
+
+        Args: title (str): The title of the movie.
+
+        Returns: pd.DataFrame(): The top 5 movies based on the title.
+        """
         logging.info("Searching for movies based on the title: %s", title)
 
         title = self.clean_title(title)
@@ -58,8 +77,14 @@ class MovieRecommender:
 
         return results
 
-    def find_similar_movies(self, movie_id):
-        """Find similar movies based on the movie id."""
+    def find_similar_movies(self, movie_id: int) -> pd.DataFrame():
+        """
+        Find similar movies based on the movie id.
+        
+        Args: movie_id (int): The id of the movie.
+
+        Returns: pd.DataFrame(): The top 5 similar movies.
+        """
         logging.info("Finding similar movies based on the movie id: %s", movie_id)
         similar_users = self.ratings[(self.ratings["movieId"] == movie_id) &
                                      (self.ratings["rating"] > 4)]["userId"].unique()
