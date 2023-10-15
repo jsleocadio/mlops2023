@@ -113,7 +113,7 @@ def main():
     """Main function."""
     logging.info("Starting the main function.")
 
-    movie_recommender = MovieRecommender("./data/movies.csv", "./data/ratings.csv")
+    movie_recommender = MovieRecommender("./ml-25m/movies.csv", "./ml-25m/ratings.csv")
 
     logging.info("Initialized the movie recommender.")
 

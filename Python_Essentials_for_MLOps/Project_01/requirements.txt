@@ -1,3 +1,5 @@
+pylint
+pytest
 pandas
 regex
 scikit-learn

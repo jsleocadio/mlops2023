@@ -1,3 +1,4 @@
-/data/*
 /movie_recommendation.log
 /__pycache__/*
+/ml-25/*
+/ml-25m.zip
