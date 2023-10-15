@@ -1,2 +1,3 @@
 /data/*
 /movie_recommendation.log
+/__pycache__/*
