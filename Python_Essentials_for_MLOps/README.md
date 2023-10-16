@@ -53,10 +53,10 @@ We will use three Dataquest projects to apply the practices described above. Bel
 ## Instalation instructions
 
 ```
-pip install -r requirements.py
+pip install -r requirements.txt
 ```
 
 ## References
 
-* [Introduction Video]()
+* [Introduction Video](https://www.loom.com/share/273551fa620442a8aea4102de32abda9?sid=fde0550e-6d3b-4427-bf25-dd1e03037449)
 * [Dataquest's Certification](https://app.dataquest.io/view_cert/C26UH6BWBWVT4KRYXHKD)
