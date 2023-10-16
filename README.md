@@ -12,6 +12,7 @@ MLOps is communication between Data Scientists and the operations or production 
 
 ## Projects
 
+* [Python Essentials for MLOps](./Python_Essentials_for_MLOps/)
 
 ## License
 

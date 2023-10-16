@@ -1,4 +1,8 @@
+pylint
+pytest
 pandas
 regex
 scikit-learn
-ipywidgets
+xmltodict
+vosk
+pydub

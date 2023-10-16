@@ -1,4 +1,5 @@
 /movie_recommendation.log
 /__pycache__/*
+/.pytest_cache/*
 /ml-25m/*
 /ml-25m.zip

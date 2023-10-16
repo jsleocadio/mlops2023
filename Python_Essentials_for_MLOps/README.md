@@ -33,9 +33,8 @@ and options in your code.
 
 We will use three Dataquest projects to apply the practices described above. Below are the projects used:
 
-* [Movie Recommendation System]()
-* [Airflow Data Pipeline to Download Podcasts]()
-* []()
+* [Movie Recommendation System](https://github.com/jsleocadio/mlops2023/tree/main/Python_Essentials_for_MLOps/Project_01)
+* [Airflow Data Pipeline to Download Podcasts](./Project_02/)
 
 ## Requirements/Tecnologies
 
@@ -44,12 +43,18 @@ We will use three Dataquest projects to apply the practices described above. Bel
     * pandas
     * regex
     * scikit-learn
-    * ipywidgets
-
+    * airflow
+    * pendulum
+    * pydub
+    * vosk
+    * requests
+    * xmltodict
 
 ## Instalation instructions
 
-
+```
+pip install -r requirements.py
+```
 
 ## References
 
